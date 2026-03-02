@@ -119,9 +119,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not verified:
         await update.message.reply_text(
             "👋 欢迎！在使用机器人领取免费 eSIM 之前，请先回答口令验证：\n\n"
-            "❓ **提示：** 宫廷玉液酒的下一句？\n"
+            "❓ <b>提示：</b> 宫廷玉液酒的下一句？\n"
             "（请直接输入你的答案）", 
-            parse_mode='Markdown'
+            parse_mode='HTML'
         )
         return
         
@@ -150,11 +150,11 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def show_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     menu_text = (
-        "🤖 **eSIM 免费领取机器人**\n\n"
+        "🤖 <b>eSIM 免费领取机器人</b>\n\n"
         "点击 /get_esim 尝试领取免费的 eSIM 套餐！\n\n"
         f"⚠️ 注意：你必须加入我们的频道/群组 {REQUIRED_CHAT_ID} 才能领取。"
     )
-    await update.message.reply_text(menu_text, parse_mode='Markdown')
+    await update.message.reply_text(menu_text, parse_mode='HTML')
 
 async def claim_esim(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
@@ -220,11 +220,11 @@ async def claim_esim(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
     # 锁释放后发送激活码给用户
     await update.message.reply_text(
-        f"🎉 **恭喜你！成功领取到一份 eSIM 激活码** 🎉\n\n"
-        f"`{esim_code}`\n\n"
-        f"*(点击激活码即可复制)*\n"
+        f"🎉 <b>恭喜你！成功领取到一份 eSIM 激活码</b> 🎉\n\n"
+        f"<code>{esim_code}</code>\n\n"
+        f"<i>(点击激活码即可复制)</i>\n"
         f"请尽快激活使用哦！",
-        parse_mode='Markdown'
+        parse_mode='HTML'
     )
 
 # ================= 管理员功能 =================
@@ -276,10 +276,10 @@ async def stock_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     total_unused = db_execute('SELECT count(*) FROM esims WHERE is_used = 0', fetchone=True)[0]
     total_used = db_execute('SELECT count(*) FROM esims WHERE is_used = 1', fetchone=True)[0]
     await update.message.reply_text(
-        f"📊 **库存统计**\n\n"
+        f"📊 <b>库存统计</b>\n\n"
         f"🟢 剩余可用：{total_unused}\n"
         f"🔴 已经被领：{total_used}",
-        parse_mode='Markdown'
+        parse_mode='HTML'
     )
 
 # ================= 启动逻辑 =================
