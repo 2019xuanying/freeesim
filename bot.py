@@ -149,11 +149,25 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     pass
 
 async def show_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
     menu_text = (
         "🤖 <b>eSIM 免费领取机器人</b>\n\n"
         "点击 /get_esim 尝试领取免费的 eSIM 套餐！\n\n"
         f"⚠️ 注意：你必须加入我们的频道/群组 {REQUIRED_CHAT_ID} 才能领取。"
     )
+    
+    # 检测是否为管理员，如果是，则追加管理面板说明
+    if user_id == ADMIN_ID:
+        menu_text += (
+            "\n\n👑 <b>管理员控制面板</b> 👑\n"
+            "作为管理员，您可以直接点击或输入以下命令：\n\n"
+            "🔹 /stats - 查看当前库存统计\n"
+            "🔹 /toggle - 开启/关闭机器人领取功能\n"
+            "🔹 <code>/add_esim 激活码1 激活码2</code> - 批量添加库存 (注意空格)\n"
+            "🔹 <code>/ban 用户ID</code> - 拉黑违规用户\n"
+            "🔹 <code>/unban 用户ID</code> - 解封用户"
+        )
+        
     await update.message.reply_text(menu_text, parse_mode='HTML')
 
 async def claim_esim(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -240,7 +254,7 @@ async def toggle_bot(update: Update, context: ContextTypes.DEFAULT_TYPE):
 @admin_only
 async def add_esim(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
-        await update.message.reply_text("使用方法: /add_esim <激活码信息>\n可以一次发送多个，空格隔开，或者一次加一个。")
+        await update.message.reply_text("使用方法: <code>/add_esim 激活码信息</code>\n可以一次发送多个，空格隔开，或者一次加一个。", parse_mode='HTML')
         return
         
     codes = context.args
@@ -256,7 +270,7 @@ async def add_esim(update: Update, context: ContextTypes.DEFAULT_TYPE):
 @admin_only
 async def ban_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
-        await update.message.reply_text("使用方法: /ban <用户ID>")
+        await update.message.reply_text("使用方法: <code>/ban 用户ID</code>", parse_mode='HTML')
         return
     target_id = context.args[0]
     db_execute('UPDATE users SET banned = 1 WHERE user_id = ?', (target_id,))
@@ -265,7 +279,7 @@ async def ban_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
 @admin_only
 async def unban_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
-        await update.message.reply_text("使用方法: /unban <用户ID>")
+        await update.message.reply_text("使用方法: <code>/unban 用户ID</code>", parse_mode='HTML')
         return
     target_id = context.args[0]
     db_execute('UPDATE users SET banned = 0 WHERE user_id = ?', (target_id,))
